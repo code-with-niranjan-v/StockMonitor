@@ -15,4 +15,7 @@ interface StockDao{
     @Query("select * from stock_data")
     fun getAllStocks():List<StockUrl>
 
+    @Query("delete from stock_data where id is :id ")
+    fun deleteAt(id:Int)
+
 }

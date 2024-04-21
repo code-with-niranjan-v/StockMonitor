@@ -12,4 +12,6 @@ class StockRepository @Inject constructor(
 
     fun getAllStock() = db.getDao().getAllStocks()
 
+    fun deleteAt(id:Int) = db.getDao().deleteAt(id)
+
 }

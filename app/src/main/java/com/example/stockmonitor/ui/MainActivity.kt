@@ -27,13 +27,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO){
-                viewModel.generateStockData().collect{
-                    Log.e("stock",it.toString())
-                }
-            }
-        }
+
 
     }
 }

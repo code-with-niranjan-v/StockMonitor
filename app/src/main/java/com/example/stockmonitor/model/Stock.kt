@@ -1,6 +1,13 @@
 package com.example.stockmonitor.model
 
+import android.graphics.Color
+import androidx.core.graphics.toColor
+import com.example.stockmonitor.R
+
 data class Stock(
     val name:String,
-    val value:String,
+    val currentValue:String,
+    val url:String = "",
+    val color:Int = R.color.black,
+    val id:Int = 0
 )
