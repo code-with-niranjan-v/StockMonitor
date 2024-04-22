@@ -14,6 +14,7 @@ class StockViewHolder(
     fun bindData(stock: Stock,listener: Listener){
         stockItemsBinding.stockName.text = stock.name
         stockItemsBinding.stockValue.text = stock.currentValue
+        stockItemsBinding.stockValue.setTextColor(stockItemsBinding.stockValue.resources.getColor(stock.color))
         stockItemsBinding.stockName.setOnClickListener {
             listener.onClick(stock.url)
         }

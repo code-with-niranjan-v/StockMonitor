@@ -13,25 +13,39 @@ import org.jsoup.nodes.Document
 class StockLoader {
 
     val listOfStocks = mutableListOf<Stock>()
+    val prevListOfStocks:MutableList<Stock> = mutableListOf()
 
 
     fun loadStock(stockUrls: List<StockUrl>){
+        prevListOfStocks.clear()
+        prevListOfStocks.addAll(listOfStocks)
         listOfStocks.clear()
-        for (url in stockUrls){
+        for (urlNo in stockUrls.indices){
             try{
-                val html = Jsoup.connect(url.url).get()
+                val html = Jsoup.connect(stockUrls[urlNo].url).get()
                 val name = html.getElementsByClass("zzDege")?.text()
                 val value = html.getElementsByClass("YMlKec fxKbKc")?.text()
-                var color = ""
                 var textColor = R.color.black
+                val curValue = value.toString().replace("₹", "").replace(",","").toDouble()
+                if (!prevListOfStocks.isEmpty()){
+                    val prevValue = prevListOfStocks[urlNo].currentValue.toString().replace("₹", "").replace(",","").toDouble()
+                    if(curValue>prevValue){
+                        textColor = R.color.green
+                    }else if(curValue<prevValue){
+                        textColor = R.color.red
+                    }else{
+                        textColor = R.color.black
+                    }
+                }
+
                 if (!name.isNullOrEmpty() && !value.isNullOrEmpty()){
 
-                    val stock = Stock(name,value,url.url,textColor, id = url.id)
+                    val stock = Stock(name,value,stockUrls[urlNo].url,textColor, id = stockUrls[urlNo].id)
                     listOfStocks.add(stock)
 
                 }
             }catch (e:Exception){
-                Log.e("stockLoader",e.message.toString())
+                Log.e("stockLoader","Error -> ${e.toString()}\n${stockUrls.toString()}\n${prevListOfStocks.toString()}")
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.stockmonitor.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stockmonitor.data.remote.StockLoader
@@ -23,10 +24,10 @@ class StockViewModel @Inject constructor(
     fun generateStockData() = flow<List<Stock>> {
         while (true){
             stockLoader.loadStock(repo.getAllStock())
-            delay(1000)
+            delay(3000)
             emit(stockLoader.listOfStocks)
-
-            delay(10000)
+            Log.e("stockLoader",stockLoader.listOfStocks.toString())
+            delay(5000)
 
 //            stockLoader.listOfStocks.clear()
 
