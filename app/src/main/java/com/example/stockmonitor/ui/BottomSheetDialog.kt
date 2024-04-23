@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.example.stockmonitor.databinding.BottomSheetBinding
 import com.example.stockmonitor.model.StockUrl
@@ -28,7 +29,9 @@ class BottomSheetDialog():BottomSheetDialogFragment() {
         bottomSheetBinding.btnAdd.setOnClickListener {
             if (bottomSheetBinding.etUrl.text.toString().isNotEmpty()){
                 viewModel.insertStock(StockUrl(bottomSheetBinding.etUrl.text.toString()))
-                viewModel.generateStockData()
+                viewModel.reload()
+                bottomSheetBinding.etUrl.text.clear()
+                Toast.makeText(context,"Stock Added",Toast.LENGTH_SHORT).show()
             }
 
         }

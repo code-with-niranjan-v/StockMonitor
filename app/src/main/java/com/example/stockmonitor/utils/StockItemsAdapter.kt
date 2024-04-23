@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.stockmonitor.R
 import com.example.stockmonitor.databinding.StockItemsBinding
 import com.example.stockmonitor.model.Stock
 
@@ -14,7 +15,8 @@ class StockViewHolder(
     fun bindData(stock: Stock,listener: Listener){
         stockItemsBinding.stockName.text = stock.name
         stockItemsBinding.stockValue.text = stock.currentValue
-        stockItemsBinding.stockValue.setTextColor(stockItemsBinding.stockValue.resources.getColor(stock.color))
+        stockItemsBinding.stockValue.setTextColor(stockItemsBinding.stockValue.resources.getColor(R.color.white))
+        stockItemsBinding.stockValue.setBackgroundColor(stockItemsBinding.stockValue.resources.getColor(stock.color))
         stockItemsBinding.stockName.setOnClickListener {
             listener.onClick(stock.url)
         }
