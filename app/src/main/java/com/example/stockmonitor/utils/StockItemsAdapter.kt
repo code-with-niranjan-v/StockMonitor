@@ -41,6 +41,7 @@ class StockItemsAdapter(
 
     fun removeAt(position: Int){
         listener.onSwipeToRemove(listOfStocks[position].id)
+
     }
 
 }

@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,6 +50,7 @@ class HomeFragment : Fragment(),Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.generateListOfStock()
 
         homeBinding.floatingBtn.setOnClickListener {
             val bottomSheet = BottomSheetDialog()
@@ -56,49 +59,23 @@ class HomeFragment : Fragment(),Listener {
 
 
 
-        lifecycleScope.launch{
+        viewLifecycleOwner.lifecycleScope.launch{
 
-              job = launch {
-                  withContext(Dispatchers.IO) {
-                      viewModel.generateStockData()
-                      Log.e("StockLoader","Hello")
-                      viewModel.generateStockData().collect{
-                          Log.e("StockLoader","Collecting Hello")
-                          withContext(Dispatchers.Main) {
-                              Log.e("StockLoader","Inside Main")
-                              if (it.isEmpty()){
-                                  homeBinding.progressBar.visibility = View.VISIBLE
-                              }else{
-                                  homeBinding.progressBar.visibility = View.GONE
-                              }
-                              homeBinding.recyclerView.adapter =
-                                  StockItemsAdapter(it, this@HomeFragment)
-                              homeBinding.recyclerView.layoutManager =
-                                  LinearLayoutManager(requireContext())
-                              val swipeHandler = object : SwipeToDeleteCallback(requireContext()) {
-                                  override fun onSwiped(
-                                      viewHolder: RecyclerView.ViewHolder,
-                                      direction: Int
-                                  ) {
-                                      val adapter =
-                                          homeBinding.recyclerView.adapter as StockItemsAdapter
-                                      adapter.removeAt(viewHolder.adapterPosition)
-                                  }
-                              }
-                              val itemTouchHelper = ItemTouchHelper(swipeHandler)
-                              itemTouchHelper.attachToRecyclerView(homeBinding.recyclerView)
-
-                          }
-                      }
-                  }
-              }
+            viewModel.stockListOfData.observe(viewLifecycleOwner){
+                Log.e("StockLoader","Inside Main")
+                if (it.isEmpty()){
+                    homeBinding.progressBar.visibility = View.VISIBLE
+                }else{
+                    homeBinding.progressBar.visibility = View.GONE
+                }
+                homeBinding.recyclerView.adapter =
+                    StockItemsAdapter(it, this@HomeFragment)
+                homeBinding.recyclerView.layoutManager =
+                    LinearLayoutManager(requireContext())
 
 
             }
-
-
-
-
+            }
      }
 
 
@@ -106,13 +83,16 @@ class HomeFragment : Fragment(),Listener {
     override fun onClick(url:String) {
         val bundle = Bundle()
         bundle.putString("url",url)
-        job.cancel()
+        viewModel.generateListOfStock().cancel()
         findNavController().navigate(R.id.action_homeFragment_to_stockInfoFragment,bundle)
 
     }
 
     override fun onSwipeToRemove(position: Int) {
         viewModel.removeAt(position)
+
+
+
     }
 
 

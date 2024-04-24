@@ -16,7 +16,7 @@ class StockLoader {
     val prevListOfStocks:MutableList<Stock> = mutableListOf()
 
 
-    fun loadStock(stockUrls: List<StockUrl>){
+    suspend fun loadStock(stockUrls: List<StockUrl>){
         setupListOfStock()
         for (urlNo in 0..stockUrls.size-1){
             try{
@@ -25,15 +25,20 @@ class StockLoader {
                 val value = html.getElementsByClass("YMlKec fxKbKc")?.text()
                 var textColor = R.color.grey
                 val curValue = value.toString().replace("₹", "").replace(",","").replace("$","").toDouble()
-                if (!prevListOfStocks.isEmpty()){
-                    val prevValue = prevListOfStocks[urlNo].currentValue.toString().replace("₹", "").replace(",","").replace("$","").toDouble()
-                    if(curValue>prevValue){
-                        textColor = R.color.green
-                    }else if(curValue<prevValue){
-                        textColor = R.color.red
-                    }else{
-                        textColor = R.color.grey
+                try {
+                    if (!prevListOfStocks.isEmpty()){
+                        val prevValue = prevListOfStocks[urlNo].currentValue.toString().replace("₹", "").replace(",","").replace("$","").toDouble()
+                        if(curValue>prevValue){
+                            textColor = R.color.green
+                        }else if(curValue<prevValue){
+                            textColor = R.color.red
+                        }else{
+                            textColor = R.color.grey
+                        }
                     }
+                }catch (e:Exception){
+                    textColor = R.color.grey
+                    Log.e("stockLoader","error for color checking -> ${prevListOfStocks.size} and ${listOfStocks.size}")
                 }
 
                 if (!name.isNullOrEmpty() && !value.isNullOrEmpty()){
@@ -55,6 +60,12 @@ class StockLoader {
         listOfStocks.clear()
     }
 
+    fun reload(){
+        prevListOfStocks.clear()
+        prevListOfStocks.clear()
+        listOfStocks.clear()
+
+    }
     private fun extractColorFromCSS(css: String, selector: String): String {
         val pattern = Regex("$selector\\s*\\{[^}]*color:\\s*(.*?);")
         val matchResult = pattern.find(css)
@@ -117,5 +128,13 @@ class StockLoader {
             Log.e("stockLoader","Error -> ${e.toString()}\n${e.message}\n")
             return Stock("Error","0.00","",0)
         }
+    }
+
+    fun addData(stock: Stock){
+        listOfStocks.add(stock)
+    }
+
+    fun deleteData(stock: Stock){
+        prevListOfStocks.remove(stock)
     }
 }

@@ -1,6 +1,8 @@
 package com.example.stockmonitor.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stockmonitor.data.remote.StockLoader
@@ -12,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,7 +22,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,31 +37,31 @@ class StockViewModel @Inject constructor(
 ):ViewModel() {
 
 
+    private val _stockListOfData = MutableLiveData<List<Stock>>(emptyList<Stock>())
+    val stockListOfData:LiveData<List<Stock>> = _stockListOfData
+
+    private val _stockInfo = MutableLiveData<String>()
+    val stockInfo:LiveData<String> = _stockInfo
+
+    private val _stockData = MutableLiveData<Stock>()
+    val stockData:LiveData<Stock> = _stockData
 
 
-    suspend fun generateStockData() =
-        flow<List<Stock>> {
-            while (true) {
-                val urls = repo.getAllStock()
-                stockLoader.loadStock(urls)
-                emit(stockLoader.listOfStocks)
 
-                //  Log.e("stockLoader",stockLoader.listOfStocks.toString())
-                delay(10000)
-
-//            stockLoader.listOfStocks.clear()
-
-
-            }
-
+    fun startDataGeneration(){
+        viewModelScope.launch(Dispatchers.IO){
+            repo.generateListOfStockData()
         }
-
+    }
 
     fun insertStock(stockUrl: StockUrl) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 repo.insertStock(stockUrl)
             }
+
+
+
         }
     }
 
@@ -64,30 +69,37 @@ class StockViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repo.deleteAt(id)
         }
-        reload()
+
+
+
     }
 
-    fun reload() = stockLoader.setupListOfStock()
-
-    suspend fun generateStock(url: String) =
-        flow<Stock> {
-            while (true) {
-                val stock = stockLoader.loadStock(url)
-                emit(stock)
-                delay(5000)
 
 
+
+
+    fun generateListOfStock() =
+        viewModelScope.launch{
+            repo.generateListOfStockData().collectLatest{
+                _stockListOfData.value = it
             }
         }
 
-    suspend fun generateStockInfo(url: String) = flow<String> {
-        while (true) {
-            val info = stockLoader.loadAdditionalInfo(url)
-            emit(info)
-            Log.e("stockLoader", info.toString())
-            delay(6000)
-        }
 
+    fun generateStockInfo(url: String){
+        viewModelScope.launch {
+            repo.generateStockInfo(url).collect{
+                _stockInfo.value = it
+            }
+        }
+    }
+
+    fun generateStockData(url: String){
+        viewModelScope.launch{
+            repo.generateStockData(url).collect{
+                _stockData.value = it
+            }
+        }
     }
 
 }

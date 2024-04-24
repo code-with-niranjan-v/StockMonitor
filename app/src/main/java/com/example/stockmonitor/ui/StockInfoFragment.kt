@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.stockmonitor.R
@@ -41,7 +43,8 @@ class StockInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        viewModel.generateStockInfo(urlArgs.url)
+        viewModel.generateStockData(urlArgs.url)
         stockInfoBinding.externalBtn.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("url", urlArgs.url)
@@ -49,31 +52,22 @@ class StockInfoFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            withContext(Dispatchers.IO){
-                viewModel.generateStock(urlArgs.url).collect { stock ->
+            viewModel.stockInfo.observe(viewLifecycleOwner){ stockInfo ->
+                stockInfoBinding.stockInfo.text = stockInfo
+            }
 
-                    withContext(Dispatchers.Main){
-                        stockInfoBinding.stockName.text = stock.name
-                        stockInfoBinding.stockValue.text = stock.currentValue
-                        if (stock.currentValue.isNotEmpty() && stock.name.isNotEmpty()) {
-                            stockInfoBinding.layout.visibility = View.VISIBLE
-                            stockInfoBinding.progressBar.visibility = View.GONE
-                        }
-                    }
+            viewModel.stockData.observe(viewLifecycleOwner){ stock ->
+                stockInfoBinding.stockName.text = stock.name
+                stockInfoBinding.stockValue.text = stock.currentValue
+                if (stock.currentValue.isNotEmpty() && stock.name.isNotEmpty()) {
+                    stockInfoBinding.layout.visibility = View.VISIBLE
+                    stockInfoBinding.progressBar.visibility = View.GONE
                 }
             }
+
+
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            withContext(Dispatchers.IO){
-                viewModel.generateStockInfo(urlArgs.url).collect { stockInfo ->
-
-                    withContext(Dispatchers.Main){
-                        stockInfoBinding.stockInfo.text = stockInfo
-                    }
-                }
-            }
-        }
     }
 
 

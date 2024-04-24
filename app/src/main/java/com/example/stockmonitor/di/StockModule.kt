@@ -21,12 +21,14 @@ object StockModule {
     @Singleton
     fun provideDb(@ApplicationContext app:Context):StockDatabase = Room.databaseBuilder(app,StockDatabase::class.java,"stock_db").build()
 
-    @Provides
-    @Singleton
-    fun provideRepo(db:StockDatabase) = StockRepository(db)
+
 
     @Provides
     @Singleton
     fun provideStockLoader() = StockLoader()
+
+    @Provides
+    @Singleton
+    fun provideRepo(db:StockDatabase,stockLoader: StockLoader) = StockRepository(db,stockLoader)
 
 }

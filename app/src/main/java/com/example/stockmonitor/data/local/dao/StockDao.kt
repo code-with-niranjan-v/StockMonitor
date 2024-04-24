@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.stockmonitor.model.StockUrl
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StockDao{
@@ -13,7 +14,7 @@ interface StockDao{
     fun insertStockData(stockData:StockUrl)
 
     @Query("select * from stock_data")
-    fun getAllStocks():List<StockUrl>
+    fun getAllStocks(): List<StockUrl>
 
     @Query("delete from stock_data where id is :id ")
     fun deleteAt(id:Int)
