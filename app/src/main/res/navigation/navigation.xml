@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_stockInfoFragment"
             app:destination="@id/stockInfoFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_stockEditFragment"
+            app:destination="@id/stockEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/webFragment"
@@ -37,4 +40,9 @@
             android:id="@+id/action_stockInfoFragment_to_webFragment"
             app:destination="@id/webFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/stockEditFragment"
+        android:name="com.example.stockmonitor.ui.StockEditFragment"
+        android:label="fragment_stock_edit"
+        tools:layout="@layout/fragment_stock_edit" />
 </navigation>

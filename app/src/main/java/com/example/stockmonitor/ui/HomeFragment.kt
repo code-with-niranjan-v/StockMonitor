@@ -53,13 +53,14 @@ class HomeFragment : Fragment(),Listener {
         viewModel.generateListOfStock()
 
         homeBinding.floatingBtn.setOnClickListener {
-            val bottomSheet = BottomSheetDialog()
-            bottomSheet.show(childFragmentManager, "ModalBottomSheet")
+            job.cancel()
+            viewModel.cancelJob()
+            findNavController().navigate(R.id.action_homeFragment_to_stockEditFragment)
         }
 
 
 
-        viewLifecycleOwner.lifecycleScope.launch{
+        job = viewLifecycleOwner.lifecycleScope.launch{
 
             viewModel.stockListOfData.observe(viewLifecycleOwner){
                 Log.e("StockLoader","Inside Main")
@@ -75,25 +76,36 @@ class HomeFragment : Fragment(),Listener {
 
 
             }
-            }
-     }
+        }
+    }
 
 
 
     override fun onClick(url:String) {
         val bundle = Bundle()
         bundle.putString("url",url)
-        viewModel.generateListOfStock().cancel()
+        job.cancel()
+        viewModel.cancelJob()
         findNavController().navigate(R.id.action_homeFragment_to_stockInfoFragment,bundle)
+    }
 
+    override fun onPause() {
+        super.onPause()
+        job.cancel()
+        viewModel.cancelJob()
     }
 
     override fun onSwipeToRemove(position: Int) {
         viewModel.removeAt(position)
-
-
-
     }
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+        viewModel.cancelJob()
+        homeBinding.recyclerView.adapter = null
+
+    }
 
 }

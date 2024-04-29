@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -50,7 +51,7 @@ class StockRepository @Inject constructor(
                 _stockListFlow.emit(stockLoader.listOfStocks)
 
                 //  Log.e("stockLoader",stockLoader.listOfStocks.toString())
-                delay(10000)
+                delay(5000)
 
 //            stockLoader.listOfStocks.clear()
 
@@ -82,12 +83,7 @@ class StockRepository @Inject constructor(
             }
         }.flowOn(Dispatchers.IO)
 
-    private suspend fun updateListFlow(){
-        val stockUrls = getAllStock()
-        stockLoader.reload()
-//        stockLoader.loadStock(stockUrls)
-        _stockListFlow.emit(stockLoader.listOfStocks)
-    }
+
 
 
 

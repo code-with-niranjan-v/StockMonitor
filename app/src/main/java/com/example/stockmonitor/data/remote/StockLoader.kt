@@ -60,12 +60,7 @@ class StockLoader {
         listOfStocks.clear()
     }
 
-    fun reload(){
-        prevListOfStocks.clear()
-        prevListOfStocks.clear()
-        listOfStocks.clear()
 
-    }
     private fun extractColorFromCSS(css: String, selector: String): String {
         val pattern = Regex("$selector\\s*\\{[^}]*color:\\s*(.*?);")
         val matchResult = pattern.find(css)

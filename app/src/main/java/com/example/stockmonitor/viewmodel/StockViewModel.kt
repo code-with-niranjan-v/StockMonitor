@@ -46,13 +46,13 @@ class StockViewModel @Inject constructor(
     private val _stockData = MutableLiveData<Stock>()
     val stockData:LiveData<Stock> = _stockData
 
+    private lateinit var job:Job
 
 
-    fun startDataGeneration(){
-        viewModelScope.launch(Dispatchers.IO){
-            repo.generateListOfStockData()
-        }
+    fun cancelJob(){
+        job.cancel()
     }
+
 
     fun insertStock(stockUrl: StockUrl) {
         viewModelScope.launch {
@@ -78,12 +78,13 @@ class StockViewModel @Inject constructor(
 
 
 
-    fun generateListOfStock() =
-        viewModelScope.launch{
-            repo.generateListOfStockData().collectLatest{
+    fun generateListOfStock() {
+        job = viewModelScope.launch {
+            repo.generateListOfStockData().collectLatest {
                 _stockListOfData.value = it
             }
         }
+    }
 
 
     fun generateStockInfo(url: String){
