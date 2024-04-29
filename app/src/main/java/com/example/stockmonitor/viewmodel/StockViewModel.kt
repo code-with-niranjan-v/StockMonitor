@@ -46,6 +46,8 @@ class StockViewModel @Inject constructor(
     private val _stockData = MutableLiveData<Stock>()
     val stockData:LiveData<Stock> = _stockData
 
+
+
     private lateinit var job:Job
 
 
@@ -102,5 +104,12 @@ class StockViewModel @Inject constructor(
             }
         }
     }
+
+    fun delete(stockUrl: StockUrl) = viewModelScope.launch(Dispatchers.IO){
+        repo.delete(stockUrl)
+    }
+
+    fun getAllUrls() = repo.getAllUrls()
+
 
 }

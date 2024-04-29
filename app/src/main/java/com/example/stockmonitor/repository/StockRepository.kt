@@ -84,6 +84,9 @@ class StockRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
 
 
+    suspend fun delete(stockUrl: StockUrl) = db.getDao().deleteAt(stockUrl.id)
+
+    fun getAllUrls() = db.getDao().getAllUrls()
 
 
 

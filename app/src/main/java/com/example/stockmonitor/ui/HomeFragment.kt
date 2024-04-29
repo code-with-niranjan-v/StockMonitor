@@ -89,6 +89,18 @@ class HomeFragment : Fragment(),Listener {
         findNavController().navigate(R.id.action_homeFragment_to_stockInfoFragment,bundle)
     }
 
+    override fun onResume() {
+        super.onResume()
+        homeBinding.progressBar.visibility = View.VISIBLE
+        viewModel.stockListOfData.observe(viewLifecycleOwner){
+            if (it.isEmpty()){
+                homeBinding.progressBar.visibility = View.VISIBLE
+            }else{
+                homeBinding.progressBar.visibility = View.GONE
+            }
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         job.cancel()

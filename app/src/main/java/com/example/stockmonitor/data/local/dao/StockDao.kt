@@ -1,5 +1,6 @@
 package com.example.stockmonitor.data.local.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -18,5 +19,11 @@ interface StockDao{
 
     @Query("delete from stock_data where id is :id ")
     fun deleteAt(id:Int)
+
+
+
+    @Query("select * from stock_data")
+    fun getAllUrls(): LiveData<List<StockUrl>>
+
 
 }
