@@ -1,6 +1,7 @@
 package com.example.stockmonitor.viewmodel
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -50,6 +51,8 @@ class StockViewModel @Inject constructor(
 
     private lateinit var job:Job
 
+    private val _widgetStock:MutableLiveData<Stock> = MutableLiveData()
+    val widgetStock:LiveData<Stock> = _widgetStock
 
     fun cancelJob(){
         job.cancel()
@@ -110,6 +113,12 @@ class StockViewModel @Inject constructor(
     }
 
     fun getAllUrls() = repo.getAllUrls()
+
+    fun loadStock(url: String){
+        Log.e("stockLoader","Widget Getting data")
+        _widgetStock.value = stockLoader.loadStock(url)
+
+    }
 
 
 }

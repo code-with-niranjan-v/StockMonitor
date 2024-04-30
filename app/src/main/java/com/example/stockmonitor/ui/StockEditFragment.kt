@@ -23,6 +23,7 @@ class StockEditFragment : Fragment(),StockUrlListener{
     private lateinit var stockEditBinding: FragmentStockEditBinding
     private val viewModel:StockViewModel by viewModels()
     private val googleFinanceUrlRegex = """^https?://www\.google\.com/finance/quote/[\w.-]+:[\w.-]+\?hl=[\w.-]+$""".toRegex()
+    private val regex = Regex("^https?://(www\\.)?google\\.com/finance.*")
 
 
 
@@ -61,7 +62,7 @@ class StockEditFragment : Fragment(),StockUrlListener{
     }
 
     private fun isValidGoogleFinanceUrl(url: String): Boolean {
-        return googleFinanceUrlRegex.matches(url)
+        return googleFinanceUrlRegex.matches(url) || regex.matches(url)
     }
 
     override fun onClick(stockUrl: StockUrl) {
