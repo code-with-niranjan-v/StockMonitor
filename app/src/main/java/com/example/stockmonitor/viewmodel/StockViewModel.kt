@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stockmonitor.data.remote.StockLoader
 import com.example.stockmonitor.model.Stock
+import com.example.stockmonitor.model.StockNews
 import com.example.stockmonitor.model.StockUrl
 import com.example.stockmonitor.repository.StockRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,6 +47,9 @@ class StockViewModel @Inject constructor(
 
     private val _stockData = MutableLiveData<Stock>()
     val stockData:LiveData<Stock> = _stockData
+
+    private val _stockNews = MutableLiveData<List<StockNews>>()
+    val stockNews:LiveData<List<StockNews>> = _stockNews
 
 
 
@@ -118,6 +122,14 @@ class StockViewModel @Inject constructor(
         Log.e("stockLoader","Widget Getting data")
         _widgetStock.value = stockLoader.loadStock(url)
 
+    }
+
+    fun generateStockNews(url: String){
+        viewModelScope.launch(Dispatchers.IO){
+            stockLoader.loadStockNews(url).let {
+                _stockNews.postValue(it)
+            }
+        }
     }
 
 

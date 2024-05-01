@@ -43,6 +43,12 @@ class StockInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.generateStockNews(urlArgs.url)
+
+        viewModel.stockNews.observe(viewLifecycleOwner){
+            Log.e("stockLoader",it.toString())
+        }
+
         viewModel.generateStockInfo(urlArgs.url)
         viewModel.generateStockData(urlArgs.url)
         stockInfoBinding.externalBtn.setOnClickListener {

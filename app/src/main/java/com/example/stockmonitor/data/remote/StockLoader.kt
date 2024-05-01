@@ -6,6 +6,7 @@ import androidx.core.graphics.toColor
 import androidx.core.graphics.toColorInt
 import com.example.stockmonitor.R
 import com.example.stockmonitor.model.Stock
+import com.example.stockmonitor.model.StockNews
 import com.example.stockmonitor.model.StockUrl
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -125,11 +126,35 @@ class StockLoader {
         }
     }
 
-    fun addData(stock: Stock){
-        listOfStocks.add(stock)
+    fun loadStockNews(url:String):List<StockNews>{
+        try {
+            val html = Jsoup.connect(url).get()
+            val newsText = html.select(".F2KAFc")
+            val urls = html.select(".tLGtv")
+            val listOfNews = mutableListOf<String>()
+            val listOfimage = mutableListOf<String>()
+            val listOfStockNews:MutableList<StockNews> = mutableListOf()
+
+            for (news in newsText){
+                listOfNews.add(news.text())
+
+            }
+
+            for (imgUrl in urls){
+                listOfimage.add(imgUrl.text())
+            }
+
+            for (index in 0..listOfNews.size-1){
+                listOfStockNews.add(StockNews(listOfNews[index],listOfimage[index]))
+            }
+            Log.e("stockLoaderNews",listOfStockNews.toString())
+            return listOfStockNews
+
+        }catch (e:Exception){
+            Log.e("stockLoaderNews",e.toString())
+            return emptyList()
+        }
     }
 
-    fun deleteData(stock: Stock){
-        prevListOfStocks.remove(stock)
-    }
+
 }
